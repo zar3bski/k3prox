@@ -1,0 +1,14 @@
+@startuml
+
+rectangle Cluster1 {
+    node "Node1" as node11
+    node "Node2" as node12
+    node "Node3" as node13
+    }
+rectangle Cluster2 {
+    node "Node1" as node21
+    node "Node2" as node22
+    node "Node3" as node23
+    }
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+
+node node1 {
+  port vip_1 as "Virtual IP" 
+  
+  component keepalived_master as "Keepalived\nMASTER" #limegreen
+  component ha_proxy_1 as "HA Proxy" #orange{
+      port ha_6443_1 as ":6443"
+      port ha_80_1 as ":80"
+      }
+  component cp_1 as "CP 1" #aliceblue
+}
+
+node node2 {
+  port vip_2 as "Virtual IP"
+
+  component keepalived_backup as "Keepalived\nBACKUP" #line:limegreen
+  component ha_proxy_2 as "HA Proxy" #orange{
+      port ha_6443_2 as ":6443"
+      port ha_80_2 as ":80"
+      }
+  component cp_2 as "CP 2" #aliceblue
+}
+
+node node3 {
+  component cp_3 as "CP 3" #aliceblue
+}
+
+vip_1 0-[thickness=2]-0 keepalived_master
+vip_2 0-[thickness=2]-0 keepalived_backup
+
+keepalived_backup -[#limegreen,dashed,thickness=2]-> keepalived_master : VRRP\nAre you alive?
+
+keepalived_master -[thickness=2]-> ha_proxy_1  : [master = forward]
+keepalived_backup .[thickness=1].> ha_proxy_2  : [backup = inhibit]
+
+ha_proxy_1 -[thickness=2]-> cp_1
+ha_proxy_1 -[thickness=2]-> cp_2
+ha_proxy_1 -[thickness=2]-> cp_3
+
+ha_proxy_2 .[thickness=2].> cp_1
+ha_proxy_2 .[thickness=2].> cp_2
+ha_proxy_2 .[thickness=2].> cp_3
+
+@enduml
