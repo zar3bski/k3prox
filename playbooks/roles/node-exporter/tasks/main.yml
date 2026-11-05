@@ -1,0 +1,17 @@
+- name: Install prometheus-node-exporter
+  community.general.apk:
+    name: prometheus-node-exporter
+
+- name: Set listen on eth1
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/node-exporter
+    regexp: r"ARGS=.*"
+    line: "ARGS=--web.listen-address='{{ ansible_facts['eth1']['ipv4']['address'] }}:{{ node_exporter_port }}'"
+  notify:
+    - Restart Node Exporter
+
+- name: Enable Node Exporter
+  ansible.builtin.service:
+    name: node-exporter
+    state: started
+    enabled: true

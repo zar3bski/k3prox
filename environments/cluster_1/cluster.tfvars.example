@@ -1,0 +1,13 @@
+proxmox_api      = "https://192.168.122.2:8006/"
+proxmox_user     = "root@pam"
+proxmox_password = "toortoor"
+ssh_keys = [
+  "<some SSH key>"
+]
+admin_password = "toortoor"
+cluster_id     = 1
+vmbr0_cidr     = "192.168.122.0/24"
+dns_server     = "8.8.8.8"
+gateway        = "192.168.122.1"
+broadcast      = "192.168.122.255"
+node_name      = "proxmox"

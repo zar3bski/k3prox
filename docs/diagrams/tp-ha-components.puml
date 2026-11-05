@@ -5,10 +5,13 @@ node node1 {
   
   component keepalived_master as "Keepalived\nMASTER" #limegreen
   component ha_proxy_1 as "HA Proxy" #orange{
-      port ha_6443_1 as ":6443"
-      port ha_80_1 as ":80"
       }
-  component cp_1 as "CP 1" #aliceblue
+  component cp_1 as "CP 1" #aliceblue{
+      }
+  component node_exporter_11 as "node_exporter"{
+      }
+  component keepalived_exporter_11 as "keepalived_exporter"{
+      }
 }
 
 node node2 {
@@ -16,14 +19,19 @@ node node2 {
 
   component keepalived_backup as "Keepalived\nBACKUP" #line:limegreen
   component ha_proxy_2 as "HA Proxy" #orange{
-      port ha_6443_2 as ":6443"
-      port ha_80_2 as ":80"
       }
-  component cp_2 as "CP 2" #aliceblue
+  component cp_2 as "CP 2" #aliceblue{
+      }
+  component node_exporter_12 as "node_exporter"{
+      }
+  component keepalived_exporter_12 as "keepalived_exporter"{
+      }
 }
 
 node node3 {
-  component cp_3 as "CP 3" #aliceblue
+  component cp_3 as "CP 3" #aliceblue{
+      }
+  component node_exporter_13 as "node_exporter"
 }
 
 vip_1 0-[thickness=2]-0 keepalived_master

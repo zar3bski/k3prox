@@ -1,0 +1,33 @@
+- name: Install HAProxy
+  community.general.apk:
+    name:
+      - haproxy
+
+- name: Allow non local binding
+  ansible.builtin.lineinfile:
+    create: true
+    path: /etc/sysctl.d/99-haproxy-vip.conf
+    owner: 0
+    group: 0
+    mode: "0644"
+    line: "net.ipv4.ip_nonlocal_bind=1"
+  register: haproxy_non_local_conf
+
+- name: Sysctl reload
+  ansible.builtin.shell:
+    cmd: "sysctl -p /etc/sysctl.d/99-haproxy-vip.conf"
+  when: haproxy_non_local_conf.changed
+
+- name: Create configuration
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: 0
+    group: 0
+    mode: "0644"
+  notify: Restart HAProxy
+- name: Enable HAProxy
+  ansible.builtin.service:
+    name: haproxy
+    state: started
+    enabled: true

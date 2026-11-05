@@ -1,0 +1,51 @@
+- name: Install tar
+  community.general.apk:
+    name: tar
+
+- name: Install bash
+  community.general.apk:
+    name: bash
+
+- name: Create keepalived opt
+  ansible.builtin.file:
+    path: /opt/keepalived-exporter
+    state: directory
+    owner: 0
+    group: 0
+    mode: "0775"
+
+- name: Download Pre-compiled binary
+  ansible.builtin.unarchive:
+    dest: /opt/keepalived-exporter
+    remote_src: yes
+    owner: 0
+    group: 0
+    mode: "0775"
+    src: https://github.com/mehdy/keepalived-exporter/releases/download/v{{ keepalived_exporter_version }}/{{ keepalived_exporter_archive }}
+
+- name: Create OpenRC unit
+  ansible.builtin.template:
+    src: keepalived-exporter.j2
+    dest: /etc/init.d/keepalived-exporter
+    owner: 0
+    group: 0
+    mode: "0755"
+  notify:
+    - Restart Keepalived Exporter
+
+- name: Create OpenRC service configuration
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/keepalived-exporter
+    create: true
+    owner: 0
+    group: 0
+    mode: "0644"
+    line: "ARGS=--web.listen-address='{{ ansible_facts['eth1']['ipv4']['address'] }}:{{ keepalived_exporter_port }}'"
+  notify:
+    - Restart Keepalived Exporter
+
+- name: Enable Keepalived Exporter
+  ansible.builtin.service:
+    name: keepalived-exporter
+    state: started
+    enabled: true

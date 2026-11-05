@@ -1,0 +1,25 @@
+- name: All
+  hosts: all
+  handlers:
+    - name: Import common handlers
+      ansible.builtin.import_tasks: "handlers/main.yml"
+  roles:
+    - common
+    - node-exporter
+- name: Load Balancers
+  hosts: lb
+  handlers:
+    - name: Import common handlers
+      ansible.builtin.import_tasks: "handlers/main.yml"
+  roles:
+    - keepalived
+    - haproxy
+    - keepalived-exporter
+- name: Control Planes
+  hosts: cp
+  handlers:
+    - name: Import common handlers
+      ansible.builtin.import_tasks: "handlers/main.yml"
+  roles:
+    - role: k3s
+      tags: ["k8s"]

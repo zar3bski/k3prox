@@ -1,0 +1,55 @@
+- name: Download installation script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /usr/local/bin/get-k3s
+    owner: root
+    group: root
+    force: true
+    mode: "0755"
+
+- name: Install iptables
+  community.general.apk:
+    name: nftables,iptables,ip6tables
+    state: present
+  register: k3s_install_iptables
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible"
+    pre_reboot_delay: 5
+    post_reboot_delay: 30
+    reboot_timeout: 600
+  when: k3s_install_iptables.changed
+
+- name: Installation Bootstrap
+  ansible.builtin.shell:
+    cmd: >
+      /usr/local/bin/get-k3s server
+      --tls-san {{ vip_v4 }}
+      --cluster-init
+      --bind-address {{ ansible_facts['eth1']['ipv4']['address'] }}
+      --node-ip {{ ansible_facts['eth1']['ipv4']['address'] }}
+      --flannel-iface eth1
+      --token {{ k3s_enrolment_token }}
+  environment:
+    INSTALL_K3S_CHANNEL: "{{ k3s_version }}"
+  changed_when: false
+  when: vrrp_master == inventory_hostname
+
+- name: Wait for Bootstrap before lauching pairing
+  ansible.builtin.pause:
+    seconds: 30
+
+- name: Installation Join
+  ansible.builtin.shell:
+    cmd: >
+      /usr/local/bin/get-k3s server
+      --server https://{{ vip_v4 }}:6443
+      --bind-address {{ ansible_facts['eth1']['ipv4']['address'] }}
+      --node-ip {{ ansible_facts['eth1']['ipv4']['address'] }}
+      --flannel-iface eth1
+      --token {{ k3s_enrolment_token }}
+  environment:
+    INSTALL_K3S_CHANNEL: "{{ k3s_version }}"
+  changed_when: false
+  when: vrrp_master != inventory_hostname

@@ -1,0 +1,29 @@
+vrrp_track_process track_haproxy {
+   process haproxy
+   weight 100 
+   quorum 1
+}
+
+vrrp_instance VI_{{ inventory_hostname }} {
+   virtual_router_id {{ router_id }}
+{% if inventory_hostname == vrrp_master %}
+   state MASTER
+   priority 150
+{% else %}
+   state BACKUP
+   priority 100
+{% endif %}
+   advert_int 1 
+   lvs_sync_daemon_interface eth0 
+   interface eth0 
+   authentication { 
+        auth_type PASS 
+        auth_pass {{ vrrp_password }} 
+   } 
+   virtual_ipaddress { 
+        {{ vip_v4 }}/32 brd {{ broadcast }} scope global 
+   }
+   track_process {
+        track_haproxy
+   }
+}

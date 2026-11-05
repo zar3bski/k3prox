@@ -1,0 +1,34 @@
+- name: Restart Keepalived
+  ansible.builtin.service:
+    name: keepalived
+    state: restarted
+
+- name: Restart HAProxy
+  ansible.builtin.service:
+    name: haproxy
+    state: restarted
+
+- name: Restart Node Exporter
+  ansible.builtin.service:
+    name: node-exporter
+    state: restarted
+
+- name: Restart Keepalived Exporter
+  ansible.builtin.service:
+    name: keepalived-exporter
+    state: restarted
+
+- name: Restart Prometheus
+  ansible.builtin.service:
+    name: prometheus
+    state: restarted
+
+- name: Restart Grafana
+  ansible.builtin.service:
+    name: grafana
+    state: restarted
+
+- name: Restart Alertmanager
+  ansible.builtin.service:
+    name: alertmanager
+    state: restarted

@@ -1,0 +1,50 @@
+@startnwdiag
+  network vmbr0 {
+      address = "192.168.x.x/16"
+
+      group cluster_1 {
+          description = "Cluster 1";
+          node01_1 [address = "192.168.x.11, virtual_ip:, 192.168.x.10", description = "cp01 \n LB1"]
+          node02_1 [address = "192.168.x.12, virtual_ip:, 192.168.x.10", description = "cp02 \n LB2"]
+          node03_1 [address = "192.168.x.13", description = "cp03"]
+      }
+
+      group cluster_2 {
+          description = "Cluster 2";
+          node01_2 [address = "192.168.x.21, virtual_ip:, 192.168.x.20", description = "cp01 \n LB1"]
+          node02_2 [address = "192.168.x.22, virtual_ip:, 192.168.x.20", description = "cp02 \n LB2"]
+          node03_2 [address = "192.168.x.23", description = "cp03"]
+      }
+      
+      group cluster_n {
+          description = "Cluster 3";
+          node01_n [address = "192.168.x.${n}1, virtual_ip:, 192.168.x.${n}0", description = "cp01 \n LB1"]
+          node02_n [address = "192.168.x.${n}2, virtual_ip:, 192.168.x.${n}0", description = "cp02 \n LB2"]
+          node03_n [address = "192.168.x.${n}3", description = "cp03"]
+      }
+  }
+
+  network vmbr1 {
+     address = "192.168.21.x/24"
+
+      node01_1 [address = "192.168.21.1"];
+      node02_1 [address = "192.168.21.2"];
+      node03_1 [address = "192.168.21.3"];
+  }
+
+  network vmbr2 {
+     address = "192.168.22.x/24"
+
+      node01_2 [address = "192.168.22.1"];
+      node02_2 [address = "192.168.22.2"];
+      node03_2 [address = "192.168.22.3"];
+  }
+  
+  network vmbrn {
+     address = "192.168.2${n}.x/24"
+
+      node01_n [address = "192.168.2${n}.1"];
+      node02_n [address = "192.168.2${n}.2"];
+      node03_n [address = "192.168.2${n}.3"];
+  }
+@endnwdiag

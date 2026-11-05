@@ -1,0 +1,20 @@
+- name: "Set DNS upstream server"
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: 0
+    group: 0
+    mode: "0664"
+
+- name: Update packages
+  community.general.apk:
+    upgrade: true
+  register: common_upgrade
+  retries: 5
+  delay: 10
+  until: common_upgrade is succeeded
+
+- name: Restart server
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+  when: common_upgrade.changed

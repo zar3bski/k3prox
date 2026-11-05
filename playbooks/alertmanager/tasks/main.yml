@@ -1,0 +1,19 @@
+- name: Install alertmanager
+  community.general.apk:
+    name: alertmanager
+
+- name: Set listen on eth1 # TODO: changer
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart Alertmanager
+
+- name: Enable Alertmanager
+  ansible.builtin.service:
+    name: alertmanager
+    state: started
+    enabled: true

@@ -1,0 +1,32 @@
+frontend prometheus
+  bind {{ ansible_facts['eth1']['ipv4']['address'] }}:{{ haproxy_exporter_port }}
+  mode http
+  http-request use-service prometheus-exporter
+  no log
+
+frontend kube-apiserver
+    bind {{ vip_v4 }}:6443
+    mode tcp
+    default_backend kube-apiserver-back
+{% set eth1_base = ansible_facts['eth1']['ipv4']['address'] | regex_replace('^(?P<base>\\d+\\.\\d+\\.\\d+)\\.\\d+$', '\\g<base>')  %}
+backend kube-apiserver-back
+    mode tcp
+    option tcp-check
+    balance roundrobin
+    server node-0 {{ eth1_base }}.1:6443 check
+    server node-1 {{ eth1_base }}.2:6443 check
+    server node-2 {{ eth1_base }}.3:6443 check
+
+frontend http
+    bind {{ vip_v4 }}:80
+    mode tcp
+    default_backend http-back
+
+backend http-back
+    mode tcp
+    option tcp-check
+    balance roundrobin
+    server node-0 {{ eth1_base }}.1:80 check
+    server node-1 {{ eth1_base }}.2:80 check
+    server node-2 {{ eth1_base }}.3:80 check
+

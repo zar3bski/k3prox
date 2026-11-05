@@ -1,0 +1,2 @@
+keepalived_exporter_version: 1.7.1
+keepalived_exporter_archive: keepalived-exporter_{{ keepalived_exporter_version }}_linux_{% if ansible_facts['architecture'] == 'x86_64' %}amd64{% elif ansible_facts['architecture'] == 'aarch64'%}arm64{% endif %}.tar.gz
